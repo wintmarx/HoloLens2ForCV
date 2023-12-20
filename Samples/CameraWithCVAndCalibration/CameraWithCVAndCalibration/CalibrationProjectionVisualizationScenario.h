@@ -21,7 +21,7 @@ namespace BasicHologram
 
         void IntializeSensors();
         void IntializeModelRendering();
-        void UpdateModels(DX::StepTimer &timer);
+        void UpdateModels(DX::StepTimer &timer, const winrt::Windows::Perception::Spatial::SpatialLocation& spatial_location);
         void PositionHologram(winrt::Windows::UI::Input::Spatial::SpatialPointerPose const& pointerPose, const DX::StepTimer& timer);
         void PositionHologramNoSmoothing(winrt::Windows::UI::Input::Spatial::SpatialPointerPose const& pointerPose);
         winrt::Windows::Foundation::Numerics::float3 const& GetPosition()
@@ -35,6 +35,9 @@ namespace BasicHologram
 
         virtual void UpdateState();
 
+        void compensateView(winrt::Windows::Graphics::Holographic::HolographicCameraPose const& cameraPose,
+            winrt::Windows::Perception::Spatial::SpatialCoordinateSystem const& coordinateSystem);
+
     protected:
 
         void IntializeSensorFrameModelRendering();
@@ -47,22 +50,23 @@ namespace BasicHologram
         DirectX::XMFLOAT4X4 m_LFCameraPose;
         DirectX::XMFLOAT4X4 m_LFCameraRotation;
         DirectX::XMFLOAT4 m_LFRotDeterminant;
+        DirectX::XMMATRIX m_lf_inv_extr;
 
         IResearchModeSensor *m_pRFCameraSensor = nullptr;
         DirectX::XMFLOAT4X4 m_RFCameraPose;
         DirectX::XMFLOAT4X4 m_RFCameraRotation;
         DirectX::XMFLOAT4 m_RFRotDeterminant;
 
-        DirectX::XMFLOAT4X4 m_groupRotation;
-
         std::vector<std::shared_ptr<ModelRenderer>> m_modelRenderers;
-        std::shared_ptr<VectorModel> m_rayLeft;
-        std::shared_ptr<VectorModel> m_rayRight;
+        std::shared_ptr<VectorModel> m_aruco_axis_model;
+        bool m_aruco_found = false;
 
-        std::shared_ptr<SlateFrameRendererWithCV> m_arucoDetectorLeft;
-        std::shared_ptr<SlateFrameRendererWithCV> m_arucoDetectorRight;
+        std::shared_ptr<ArucoDetector> m_arucoDetectorLeft;
+        std::shared_ptr<ArucoDetector> m_arucoDetectorRight;
 
-        std::vector<std::shared_ptr<SlateFrameRendererWithCV>> m_arucoDetectors;
+        std::shared_ptr<SensorReaderThread> m_sensorReaderLeft;
+        std::shared_ptr<SensorReaderThread> m_sensorReaderRight;
+        
         int m_state = 0;
     };
 }

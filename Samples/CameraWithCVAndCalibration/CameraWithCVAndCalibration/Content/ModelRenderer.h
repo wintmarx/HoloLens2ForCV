@@ -87,11 +87,6 @@ namespace BasicHologram
             m_renderEnabled = false;
         }
 
-        virtual bool IsAxisModel()
-        {
-            return false;
-        }
-
     protected:
 
         virtual void GetModelVertices(std::vector<VertexPositionColor> &modelVertices) = 0;

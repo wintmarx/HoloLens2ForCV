@@ -29,9 +29,9 @@
 
 #ifdef DRAW_SAMPLE_CONTENT
 #include "Content\ModelRenderer.h"
-#include "Content\SlateCameraRenderer.h"
+#include "Content\ArucoDetector.h"
 #include "Content\SpatialInputHandler.h"
-#include "Content\SlateFrameRendererWithCV.h"
+#include "Content\SensorReaderThread.h"
 #include "Content\XAxisModel.h"
 #include "Content\YAxisModel.h"
 #include "Content\ZAxisModel.h"
@@ -58,7 +58,7 @@ namespace BasicHologram
         virtual void IntializeModelRendering() = 0;
         virtual void PositionHologram(winrt::Windows::UI::Input::Spatial::SpatialPointerPose const& pointerPose, const DX::StepTimer& timer) = 0;
         virtual void PositionHologramNoSmoothing(winrt::Windows::UI::Input::Spatial::SpatialPointerPose const& pointerPose) = 0;
-        virtual void UpdateModels(DX::StepTimer &timer) = 0;
+        virtual void UpdateModels(DX::StepTimer &timer, const winrt::Windows::Perception::Spatial::SpatialLocation& spatial_location) = 0;
         virtual winrt::Windows::Foundation::Numerics::float3 const& GetPosition() = 0;
         virtual void RenderModels() = 0;
 
@@ -75,7 +75,7 @@ namespace BasicHologram
         virtual void OnDeviceRestored() = 0;
 
     protected:
-        std::shared_ptr<DX::DeviceResources>                        m_deviceResources;
+        std::shared_ptr<DX::DeviceResources> m_deviceResources;
         winrt::Windows::Perception::Spatial::SpatialStationaryFrameOfReference m_stationaryReferenceFrame = nullptr;
 
     };

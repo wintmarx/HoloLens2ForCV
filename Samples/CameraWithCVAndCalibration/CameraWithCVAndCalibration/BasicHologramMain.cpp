@@ -13,7 +13,6 @@
 #include "BasicHologramMain.h"
 #include "Common\DirectXHelper.h"
 
-#include "content\OpenCVFrameProcessing.h"
 #include "CalibrationProjectionVisualizationScenario.h"
 
 #include <windows.graphics.directx.direct3d11.interop.h>
@@ -164,54 +163,56 @@ HolographicFrame BasicHologramMain::Update()
 	m_deviceResources->EnsureCameraResources(holographicFrame, prediction);
     SpatialPointerPose pose = nullptr;
 
-    if (m_fUseWorldSpace)
-    {
-        if (m_stationaryReferenceFrame != nullptr)
-        {
-            SpatialInteractionSourceState pointerState = m_spatialInputHandler->CheckForInput();
+  //  if (m_fUseWorldSpace)
+  //  {
+  //      if (m_stationaryReferenceFrame != nullptr)
+  //      {
+  //          SpatialInteractionSourceState pointerState = m_spatialInputHandler->CheckForInput();
 
-            if (m_fFirstUpdate)
-            {
-                pose = SpatialPointerPose::TryGetAtTimestamp(m_stationaryReferenceFrame.CoordinateSystem(), prediction.Timestamp());
-                m_fFirstUpdate = false;
-            }
-            else if (pointerState != nullptr)
-            {
-                pose = pointerState.TryGetPointerPose(m_stationaryReferenceFrame.CoordinateSystem());
-                m_scenario->UpdateState();
-            }
+  //          if (m_fFirstUpdate)
+  //          {
+  //              pose = SpatialPointerPose::TryGetAtTimestamp(m_stationaryReferenceFrame.CoordinateSystem(), prediction.Timestamp());
+  //              m_fFirstUpdate = false;
+  //          }
+  //          else if (pointerState != nullptr)
+  //          {
+  //              pose = pointerState.TryGetPointerPose(m_stationaryReferenceFrame.CoordinateSystem());
+  //              m_scenario->UpdateState();
+  //          }
 
-            // When a Pressed gesture is detected, the sample hologram will be repositioned
-            // two meters in front of the user.
-            m_scenario->PositionHologramNoSmoothing(pose);
-		}
-    }
-    else
-    {
-        SpatialInteractionSourceState pointerState = m_spatialInputHandler->CheckForInput();
-        if (pointerState != nullptr)
-        {
-            m_inputCount++;
-            //pose = pointerState.TryGetPointerPose(m_stationaryReferenceFrame.CoordinateSystem());
-            m_scenario->UpdateState();
-        }
+  //          if (pose) {
+  //              // When a Pressed gesture is detected, the sample hologram will be repositioned
+  //              // two meters in front of the user.
+  //              m_scenario->PositionHologramNoSmoothing(pose);
+  //          }
+		//}
+  //  }
+  //  else
+  //  {
+  //      SpatialInteractionSourceState pointerState = m_spatialInputHandler->CheckForInput();
+  //      if (pointerState != nullptr)
+  //      {
+  //          m_inputCount++;
+  //          //pose = pointerState.TryGetPointerPose(m_stationaryReferenceFrame.CoordinateSystem());
+  //          m_scenario->UpdateState();
+  //      }
 
-        // Next, we get a coordinate system from the attached frame of reference that is
-        // associated with the current frame. Later, this coordinate system is used for
-        // for creating the stereo view matrices when rendering the sample content.
-        SpatialCoordinateSystem currentCoordinateSystem = 
-            m_attachedReferenceFrame.GetStationaryCoordinateSystemAtTimestamp(prediction.Timestamp());
+  //      // Next, we get a coordinate system from the attached frame of reference that is
+  //      // associated with the current frame. Later, this coordinate system is used for
+  //      // for creating the stereo view matrices when rendering the sample content.
+  //      SpatialCoordinateSystem currentCoordinateSystem = 
+  //          m_attachedReferenceFrame.GetStationaryCoordinateSystemAtTimestamp(prediction.Timestamp());
 
-        pose = SpatialPointerPose::TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp());
+  //      pose = SpatialPointerPose::TryGetAtTimestamp(currentCoordinateSystem, prediction.Timestamp());
 
-        m_scenario->PositionHologram(pose, m_timer);
-    }
+  //      m_scenario->PositionHologram(pose, m_timer);
+  //  }
 
     // When a Pressed gesture is detected, the sample hologram will be repositioned
     // two meters in front of the user.
 
 
-    m_timer.Tick([this]()
+    m_timer.Tick([this, timestamp = prediction.Timestamp()]()
     {
         //
         // TODO: Update scene objects.
@@ -222,10 +223,16 @@ HolographicFrame BasicHologramMain::Update()
         //
 
 #ifdef DRAW_SAMPLE_CONTENT
-        m_scenario->UpdateModels(m_timer);
-        
+        if (!m_stationaryReferenceFrame)
+        {
+            return;
+        }
+
+        auto loc = m_spatialLocator.TryLocateAtTimestamp(timestamp, m_stationaryReferenceFrame.CoordinateSystem());
+        m_scenario->UpdateModels(m_timer, loc);
 #endif
     });
+
     if (!m_canCommitDirect3D11DepthBuffer)
     {
         // On versions of the platform that do not support the CommitDirect3D11DepthBuffer API, we can control

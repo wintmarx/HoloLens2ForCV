@@ -39,7 +39,9 @@ namespace BasicHologram
             m_yoriginColor = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
             m_zoriginColor = DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);
 
+            DirectX::XMStoreFloat4x4(&m_rotation, DirectX::XMMatrixIdentity());
         }
+
         virtual ~XYZAxisModel()
         {
         }
@@ -62,11 +64,6 @@ namespace BasicHologram
             m_xoriginColor = xcolor;
             m_yoriginColor = ycolor;
             m_zoriginColor = zcolor;
-        }
-
-        virtual bool IsAxisModel()
-        {
-            return true;
         }
 
     protected:

@@ -17,7 +17,7 @@ using namespace DirectX;
 using namespace winrt::Windows::Foundation::Numerics;
 using namespace winrt::Windows::UI::Input::Spatial;
 
-VectorModel::VectorModel(std::shared_ptr<DX::DeviceResources> const& deviceResources, float length, float thick, DirectX::XMFLOAT3 vectorFromOrigin) :
+VectorModel::VectorModel(std::shared_ptr<DX::DeviceResources> const& deviceResources, float length, float thick, DirectX::XMFLOAT3 origin, DirectX::XMFLOAT3 vectorFromOrigin) :
     ModelRenderer(deviceResources)
 {
     m_pixelShaderFile = L"ms-appx:///SimplePixelShader.cso";
@@ -27,29 +27,31 @@ VectorModel::VectorModel(std::shared_ptr<DX::DeviceResources> const& deviceResou
     m_endColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
     m_originColor = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
 
+    m_position = float3{ origin.x, origin.y, origin.z };
+    DirectX::XMStoreFloat4x4(&m_rotation, DirectX::XMMatrixIdentity());
+    
     SetDirection(vectorFromOrigin);
 }
 
 void VectorModel::SetDirection(DirectX::XMFLOAT3 vectorFromOrigin)
 {
-    m_vectorFromOrigin = vectorFromOrigin;
-    XMFLOAT3 xfunitVector;
-    xfunitVector.x = 1.0f;
-    xfunitVector.y = 0.0f;
-    xfunitVector.z = 0.0f;
+    //XMFLOAT3 xfunitVector;
+    //xfunitVector.x = 1.0f;
+    //xfunitVector.y = 0.0f;
+    //xfunitVector.z = 0.0f;
 
-    XMVECTOR normalizedVector = XMVector3Normalize(XMLoadFloat3(&vectorFromOrigin));
-    XMVECTOR xunitVector = XMLoadFloat3(&xfunitVector);
+    //XMVECTOR normalizedVector = XMVector3Normalize(XMLoadFloat3(&vectorFromOrigin));
+    //XMVECTOR xunitVector = XMLoadFloat3(&xfunitVector);
 
-    XMVECTOR dotProdVector = XMVector3Dot(xunitVector, normalizedVector);
-    XMFLOAT3 fdotProduct;
-    XMStoreFloat3(&fdotProduct, dotProdVector);
-    float angle = XMScalarACos(fdotProduct.x);
+    //XMVECTOR dotProdVector = XMVector3Dot(xunitVector, normalizedVector);
+    //XMFLOAT3 fdotProduct;
+    //XMStoreFloat3(&fdotProduct, dotProdVector);
+    //float angle = XMScalarACos(fdotProduct.x);
 
-    XMVECTOR crossProdVector = XMVector3Cross(xunitVector, normalizedVector);
+    //XMVECTOR crossProdVector = XMVector3Cross(xunitVector, normalizedVector);
 
-    XMMATRIX rotMatrix = XMMatrixRotationAxis(crossProdVector, angle);
-    XMStoreFloat4x4(&m_rotation, rotMatrix);
+    //XMMATRIX rotMatrix = XMMatrixRotationAxis(crossProdVector, angle);
+    //XMStoreFloat4x4(&m_rotation, rotMatrix);
 }
 
 DirectX::XMMATRIX VectorModel::GetModelRotation()

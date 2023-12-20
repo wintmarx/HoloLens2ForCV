@@ -29,6 +29,7 @@ ModelRenderer::ModelRenderer(std::shared_ptr<DX::DeviceResources> const& deviceR
     XMStoreFloat4x4(&m_modelTransform, DirectX::XMMatrixIdentity());
     XMStoreFloat4x4(&m_groupTransform, DirectX::XMMatrixIdentity());
 
+
     m_radiansY = static_cast<float>(XM_PI / 2);
     m_fGroupScale = 1.0f;
 }
@@ -133,7 +134,7 @@ void ModelRenderer::Update(DX::StepTimer const& timer)
 
     XMMATRIX combinedModelTransform = modelRotation * modelTransform * modelOffsetTranslation;
 
-    XMStoreFloat4x4(&m_modelConstantBufferData.model, XMMatrixTranspose(combinedModelTransform * groupScalingMatrix * groupTransformMatrix * headlockedRotationMatrix * headlockedTranslation));
+    XMStoreFloat4x4(&m_modelConstantBufferData.model, XMMatrixTranspose(headlockedTranslation * combinedModelTransform /** groupScalingMatrix * groupTransformMatrix * headlockedRotationMatrix */));
 
     // Loading is asynchronous. Resources must be created before they can be updated.
     if (!m_loadingComplete)

@@ -19,7 +19,7 @@ using namespace winrt::Windows::UI::Input::Spatial;
 
 DirectX::XMMATRIX XYZAxisModel::GetModelRotation()
 {
-    return DirectX::XMMatrixIdentity();
+    return DirectX::XMLoadFloat4x4(&m_rotation);
     //return DirectX::XMMatrixRotationAxis(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), -DirectX::XM_PIDIV2);
 }
 

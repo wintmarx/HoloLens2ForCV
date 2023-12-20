@@ -27,7 +27,7 @@ namespace BasicHologram
         public ModelRenderer
     {
     public:
-        VectorModel(std::shared_ptr<DX::DeviceResources> const& deviceResources, float length, float thick, DirectX::XMFLOAT3 point);
+        VectorModel(std::shared_ptr<DX::DeviceResources> const& deviceResources, float length, float thick, DirectX::XMFLOAT3 origin, DirectX::XMFLOAT3 vectorFromOrigin);
 
         virtual ~VectorModel()
         {
@@ -53,11 +53,6 @@ namespace BasicHologram
 
         void SetDirection(DirectX::XMFLOAT3 point);
 
-        virtual bool IsAxisModel()
-        {
-            return true;
-        }
-
     protected:
 
         void GetModelVertices(std::vector<VertexPositionColor> &returnedModelVertices);
@@ -81,7 +76,5 @@ namespace BasicHologram
         DirectX::XMFLOAT4X4 m_rotation;
         DirectX::XMFLOAT3 m_endColor;
         DirectX::XMFLOAT3 m_originColor;
-
-        DirectX::XMFLOAT3 m_vectorFromOrigin;
     };
 }

@@ -22,6 +22,7 @@
 #include <winrt\Windows.Foundation.h>
 #include <winrt\Windows.Foundation.Collections.h>
 #include <winrt\Windows.Foundation.Metadata.h>
+#include "winrt/Windows.Foundation.Diagnostics.h"
 #include <winrt\Windows.Gaming.Input.h>
 #include <winrt\Windows.Graphics.Display.h>
 #include <winrt\Windows.Graphics.Holographic.h>
@@ -38,4 +39,6 @@
 #include <opencv2/imgproc.hpp>  // cv::Canny()
 #include <opencv2/aruco.hpp>
 #include <opencv2/core/mat.hpp>
+
+#include <format>
 
